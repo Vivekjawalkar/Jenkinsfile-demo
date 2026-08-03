@@ -1,37 +1,36 @@
 pipeline {
   agent any 
   stages {
-stage('Checkout'){
+stage('Build'){
   steps{
-    echo 'Download Code'
+    sh 'mvn clean compile'
   }
 }
-    stage('Build'){
+    stage('Test') {
       steps {
-        sh'echo "Hello Jenkins" > output.txt'
-        sh 'cat output.txt'
+        sh 'mvn test'
       }
     }
-    stage('Test'){
+    stage('Package') {
       steps {
-        echo 'running testing on a application'
+        sh 'mvn package'
       }
     }
     stage('Archive') {
       steps {
-        archiveArtifacts artifacts: 'output.txt'
+        archiveArtifacts artifacts: 'target/*.jar'
       }
     }
   }
   post {
     always {
-      echo 'Pipeline Finished'
+      echo 'Pipeline execution  complete'
     }
     success {
-      echo 'Build Successful'
+      echo 'Build, Test and Package Successful'
     }
     failure {
-      echo 'Build Failed'
+      echo 'Pipeline Failed - check consoule output'
     }
   }
 }
